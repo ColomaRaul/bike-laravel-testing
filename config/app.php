@@ -1,9 +1,5 @@
 <?php
 
-use App\Shared\Infrastructure\Laravel\Providers\AppServiceProvider;
-use App\Shared\Infrastructure\Laravel\Providers\AuthServiceProvider;
-use App\Shared\Infrastructure\Laravel\Providers\EventServiceProvider;
-use App\Shared\Infrastructure\Laravel\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
@@ -167,11 +163,11 @@ return [
         /*
          * Application Service Providers...
          */
-        AppServiceProvider::class,
-        AuthServiceProvider::class,
+        App\Providers\AppServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
-        EventServiceProvider::class,
-        RouteServiceProvider::class,
+        App\Providers\EventServiceProvider::class,
+        App\Providers\RouteServiceProvider::class,
     ])->toArray(),
 
     /*
