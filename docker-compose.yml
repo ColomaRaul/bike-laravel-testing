@@ -1,0 +1,65 @@
+version: "3.8"
+services:
+  # PHP service
+  app:
+    build:
+      context: ./docker/php
+    container_name: app-php
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - app-network
+
+  # Server service
+  nginx:
+    image: nginx:alpine
+    container_name: app-nginx
+    working_dir: /var/www/html
+    ports:
+      - "8001:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  # Database service
+  db:
+    image: postgres:15.3-alpine
+    container_name: app-postgres
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_PASSWORD: app-pass
+      POSTGRES_USER: app-db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # Cache service
+  redis:
+    image: 'redis:alpine'
+    container_name: app-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis:/var/lib/redis/data
+    networks:
+      - app-network
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      retries: 3
+      timeout: 5s
+
+networks:
+  app-network:
+    driver: bridge
+volumes:
+  postgres:
+  redis:
