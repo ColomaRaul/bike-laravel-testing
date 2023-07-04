@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Bike\Domain\Model;
+namespace App\Models;
 
-use App\Bike\Domain\ValueObject\ItemCollection;
-use App\Shared\Domain\ValueObject\DateTimeValue;
-use App\Shared\Domain\ValueObject\Money;
-use App\Shared\Domain\ValueObject\Uuid;
+use App\Models\ValueObject\DateTimeValue;
+use App\Models\ValueObject\ItemCollection;
+use App\Models\ValueObject\Money;
+use App\Models\ValueObject\Uuid;
 
-final class Bike
+final class Bike implements \JsonSerializable
 {
     private Uuid $id;
     private string $name;
@@ -107,4 +107,17 @@ final class Bike
         return $this->updatedAt;
     }
 
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id()->value(),
+            'name' => $this->name(),
+            'description' => $this->description(),
+            'price' => $this->price()->toFloat(),
+            'manufacturer' => $this->manufacturer(),
+            'items' => $this->items()->jsonSerialize(),
+            'created_at' => $this->createdAt()->toAtomString(),
+            'updated_at' => $this->updatedAt()->toAtomString(),
+        ];
+    }
 }

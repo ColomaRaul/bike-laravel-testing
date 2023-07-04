@@ -1,15 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Bike\Domain\ValueObject;
+namespace App\Models\ValueObject;
 
-use App\Bike\Domain\Model\Item;
+use App\Models\Item;
 
 final class ItemCollection
 {
-    public function __construct(private array $values)
+    private function __construct(private array $values)
     {
         $this->assertValues($this->values);
+    }
+
+    public static function from(array $values): self
+    {
+        return new self($values);
     }
 
     public function values(): array
@@ -17,10 +22,15 @@ final class ItemCollection
         return $this->values;
     }
 
+    public function jsonSerialize(): array
+    {
+        return array_map(static fn($value) => $value->jsonSerialize(), $this->values());
+    }
+
     private function assertValues(array $values): void
     {
         foreach ($values as $value) {
-            if (!$value instanceof Item::class) {
+            if (!$value instanceof Item) {
                 throw new \InvalidArgumentException('Invalid argument.');
             }
 

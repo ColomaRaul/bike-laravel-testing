@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Shared\Domain\ValueObject;
+namespace App\Models\ValueObject;
 
 final class Money
 {
@@ -12,6 +12,11 @@ final class Money
     public static function from(int $value): self
     {
         return new self($value);
+    }
+
+    public static function fromFloat(float $value): self
+    {
+        return new self((int)round($value * 100));
     }
 
     public function value(): int

@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Bike\Domain\Model;
+namespace App\Models;
 
-use App\Shared\Domain\ValueObject\DateTimeValue;
-use App\Shared\Domain\ValueObject\Uuid;
+use App\Models\ValueObject\DateTimeValue;
+use App\Models\ValueObject\Uuid;
 
-final class Item
+final class Item implements \JsonSerializable
 {
     private Uuid $id;
     private string $model;
@@ -79,5 +79,17 @@ final class Item
     public function updatedAt(): DateTimeValue
     {
         return $this->updatedAt;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id()->value(),
+            'model' => $this->model(),
+            'type' => $this->type(),
+            'description' => $this->description(),
+            'created_at' => $this->createdAt()->toAtomString(),
+            'updated_at' => $this->updatedAt()->toAtomString(),
+        ];
     }
 }

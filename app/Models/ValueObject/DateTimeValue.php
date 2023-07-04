@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Shared\Domain\ValueObject;
+namespace App\Models\ValueObject;
 
-use DateTimeInterface;
 use DateTimeImmutable;
+use DateTimeInterface;
 use DateTimeZone;
 
 final class DateTimeValue
