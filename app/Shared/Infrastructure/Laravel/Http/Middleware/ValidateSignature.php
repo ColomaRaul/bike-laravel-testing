@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Infrastructure\Http\Middleware;
+namespace App\Shared\Infrastructure\Laravel\Http\Middleware;
 
 use Illuminate\Routing\Middleware\ValidateSignature as Middleware;
 

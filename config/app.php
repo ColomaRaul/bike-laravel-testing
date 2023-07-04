@@ -1,9 +1,9 @@
 <?php
 
-use App\Shared\Infrastructure\Providers\AppServiceProvider;
-use App\Shared\Infrastructure\Providers\AuthServiceProvider;
-use App\Shared\Infrastructure\Providers\EventServiceProvider;
-use App\Shared\Infrastructure\Providers\RouteServiceProvider;
+use App\Shared\Infrastructure\Laravel\Providers\AppServiceProvider;
+use App\Shared\Infrastructure\Laravel\Providers\AuthServiceProvider;
+use App\Shared\Infrastructure\Laravel\Providers\EventServiceProvider;
+use App\Shared\Infrastructure\Laravel\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
