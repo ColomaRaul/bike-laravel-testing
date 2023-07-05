@@ -5,43 +5,41 @@ namespace App\Models;
 
 use App\Models\ValueObject\DateTimeValue;
 use App\Models\ValueObject\Uuid;
+use Illuminate\Database\Eloquent\Model;
 
-final class Item implements \JsonSerializable
+final class Item extends Model implements \JsonSerializable
 {
+    protected $table = 'item';
+    protected $fillable = [
+        'id',
+        'bike_id',
+        'model',
+        'type',
+        'description',
+        'created_at',
+        'updated_at',
+    ];
+
     private Uuid $id;
+    private Uuid $bikeId;
     private string $model;
-    private ?string $type;
+    private string $type;
     private ?string $description;
     private DateTimeValue $createdAt;
     private DateTimeValue $updatedAt;
 
-    public static function create(
-        Uuid $id,
-        string $model,
-        ?string $type,
-        ?string $description,
-    ): self {
-        $self = new self();
-        $self->id = $id;
-        $self->model = $model;
-        $self->type = $type;
-        $self->description = $description;
-        $self->createdAt = DateTimeValue::create();
-        $self->updatedAt = DateTimeValue::create();
-
-        return $self;
-    }
-
     public static function reconstitute(
         Uuid $id,
+        Uuid $bikeId,
         string $model,
-        ?string $type,
+        string $type,
         ?string $description,
         DateTimeValue $createdAt,
         DateTimeValue $updatedAt,
     ): self {
         $self = new self();
         $self->id = $id;
+        $self->bikeId = $bikeId;
         $self->model = $model;
         $self->type = $type;
         $self->description = $description;
@@ -56,12 +54,17 @@ final class Item implements \JsonSerializable
         return $this->id;
     }
 
+    public function bikeId(): Uuid
+    {
+        return $this->bikeId;
+    }
+
     public function model(): string
     {
         return $this->model;
     }
 
-    public function type(): ?string
+    public function type(): string
     {
         return $this->type;
     }
@@ -85,6 +88,7 @@ final class Item implements \JsonSerializable
     {
         return [
             'id' => $this->id()->value(),
+            'bike_id' => $this->bikeId()->value(),
             'model' => $this->model(),
             'type' => $this->type(),
             'description' => $this->description(),

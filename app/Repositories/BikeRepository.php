@@ -9,11 +9,11 @@ final class BikeRepository implements BikeRepositoryInterface
 {
     public function save(Bike $bike): void
     {
-        // TODO: Implement save() method.
+        $bike->save();
     }
 
     public function searchByCriteria(): array
     {
-        // TODO: Implement searchByCriteria() method.
+        return [];
     }
 }

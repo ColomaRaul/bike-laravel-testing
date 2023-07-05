@@ -8,12 +8,15 @@ use App\Models\Item;
 use App\Models\ValueObject\ItemCollection;
 use App\Models\ValueObject\Money;
 use App\Models\ValueObject\Uuid;
-use Illuminate\Support\Facades\Cache;
+use App\Repositories\BikeRepositoryInterface;
+use App\Repositories\ItemRepositoryInterface;
 
 final class CreateBikeService
 {
-    public function __construct()
-    {
+    public function __construct(
+        private BikeRepositoryInterface $bikeRepository,
+        private ItemRepositoryInterface $itemRepository,
+    ) {
     }
 
     public function execute(
@@ -24,26 +27,31 @@ final class CreateBikeService
         string $manufacturer,
         array $items,
     ): void {
-        $itemsCollection = [];
         foreach ($items as $item) {
-            $itemsCollection[] = Item::create(
-                Uuid::random(),
-                $item['model'],
-                $item['type'] ?? null,
-                $item['description'] ?? null,
+            $item = Item::create(
+                [
+                    'id' => Uuid::random(),
+                    'bike_id' => $id->value(),
+                    'model' => $item['model'],
+                    'type' => $item['type'],
+                    'description' => $item['description'] ?? null,
+                ],
             );
-        }
 
+            $this->itemRepository->save($item);
+        }
         $bike = Bike::create(
-            $id,
-            $name,
-            $description,
-            Money::fromFloat($price),
-            $manufacturer,
-            ItemCollection::from($itemsCollection),
+            [
+                'id' => $id->value(),
+                'name' => $name,
+                'description' => $description,
+                'price' => Money::fromFloat($price)->value(),
+                'manufacturer' => $manufacturer,
+            ],
         );
 
         //SAVE bike
-        Cache::put('bike_'.$id->value(), $bike, 60);
+//        Cache::put('bike_'.$id->value(), $bike, 60);
+        $this->bikeRepository->save($bike);
     }
 }

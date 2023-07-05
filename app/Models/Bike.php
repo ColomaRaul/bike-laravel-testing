@@ -7,9 +7,12 @@ use App\Models\ValueObject\DateTimeValue;
 use App\Models\ValueObject\ItemCollection;
 use App\Models\ValueObject\Money;
 use App\Models\ValueObject\Uuid;
+use Illuminate\Database\Eloquent\Model;
 
-final class Bike implements \JsonSerializable
+final class Bike extends Model implements \JsonSerializable
 {
+    protected $table = 'bike';
+
     private Uuid $id;
     private string $name;
     private ?string $description;
@@ -19,30 +22,15 @@ final class Bike implements \JsonSerializable
     private DateTimeValue $createdAt;
     private DateTimeValue $updatedAt;
 
-    public function __construct()
-    {
-    }
-
-    public static function create(
-        Uuid $id,
-        string $name,
-        ?string $description,
-        ?Money $price,
-        ?string $manufacturer,
-        ItemCollection $items,
-    ): self {
-        $self = new self();
-        $self->id = $id;
-        $self->name = $name;
-        $self->description = $description;
-        $self->price = $price;
-        $self->manufacturer = $manufacturer;
-        $self->items = $items;
-        $self->createdAt = DateTimeValue::create();
-        $self->updatedAt = DateTimeValue::create();
-
-        return $self;
-    }
+    protected $fillable = [
+        'id',
+        'name',
+        'description',
+        'price',
+        'manufacturer',
+        'created_at',
+        'updated_at',
+    ];
 
     public static function reconstitute(
         Uuid $id,
