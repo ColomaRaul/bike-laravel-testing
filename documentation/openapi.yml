@@ -1,0 +1,258 @@
+openapi: 3.0.3
+info:
+  title: Swagger Bike Application - OpenAPI 3.0
+  version: 1.0.0
+  description: |-
+    This is a sample Bike Application example, that only allows create and search.
+
+servers:
+  - url: https://localhost:8001/api
+tags:
+  - name: Bike
+    description: Everything about bikes
+  - name: Login
+    description: Security about login
+
+paths:
+  /bike/create:
+    post:
+      tags:
+        - Bike
+      security:
+        - BearerAuth: []
+      summary: Create a new bike
+      description: Create a new bike
+      operationId: createBike
+      requestBody:
+        description: Update an existent pet in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BikeCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BikeCreateResponse'
+  /bike/search:
+    get:
+      tags:
+        - Bike
+      security:
+        - BearerAuth: []
+      summary: Search bikes with query params
+      description: Search bikes with query params
+      operationId: searchBike
+      parameters:
+        - name: name
+          in: query
+          description: "Name of the bike"
+          required: false
+          schema:
+            type: string
+            example: "BH"
+        - name: manufacturer
+          in: query
+          description: "Name of the manufacturer"
+          required: false
+          schema:
+            type: string
+            example: "BH Manufacturer S.A."
+        - name: type
+          in: query
+          description: "Name of the type of the item in the bike"
+          required: false
+          schema:
+            type: string
+            example: "Wheel"
+        - name: order
+          in: query
+          description: "Ordered by bike name"
+          required: false
+          schema:
+            type: string
+            example: "desc"
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BikeSearchResponse'
+        500:
+          description: Server error
+  /register:
+    post:
+      tags:
+        - Login
+      summary: Register an user
+      description: Register a new user for the secure application
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUser'
+        required: true
+      responses:
+        201:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginUserResponse'
+  /login:
+    post:
+      tags:
+        - Login
+      summary: Register an user
+      description: Register a new user for the secure application
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUser'
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginUserResponse'
+
+
+components:
+  schemas:
+    BikeCreate:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          example: "BH Trial"
+        description:
+          type: string
+          example: "BH mountain bike for the beginner rider"
+        price:
+          type: number
+          example: 2999.95
+        manufacturer:
+          type: string
+          example: "BH Manufacturer S.A"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BikeItemCreate'
+
+    BikeItemCreate:
+      required:
+        - model
+        - type
+      properties:
+        model:
+          type: string
+          example: "Wheels 27"
+        type:
+          type: string
+          example: "Wheels"
+        description:
+          type: string
+          example: "fabulous mountain wheels to climb up to the highest ridge you can imagine."
+    BikeCreateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+
+    BikeSearchResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "BH Trial"
+        description:
+          type: string
+          example: "BH mountain bike for the beginner rider"
+        price:
+          type: number
+          example: 2999.95
+        manufacturer:
+          type: string
+          example: "BH Manufacturer S.A"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BikeItemSearchResponse'
+
+    BikeItemSearchResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+        bike_id:
+          type: string
+          format: uuid
+        model:
+          type: string
+          example: "Wheels 27"
+        type:
+          type: string
+          example: "Wheels"
+        description:
+          type: string
+          example: "fabulous mountain wheels to climb up to the highest ridge you can imagine."
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    RegisterUser:
+      properties:
+        name:
+          type: string
+          example: "Joselito"
+        email:
+          type: string
+          example: "Joselito@example.com"
+        password:
+          type: string
+          example: "Joselito123"
+    LoginUser:
+      properties:
+        email:
+          type: string
+          example: "Joselito@example.com"
+        password:
+          type: string
+          example: "Joselito123"
+    LoginUserResponse:
+      properties:
+        access_token:
+          type: string
+          example: "1|ZdXM4pT5vsljptEAmFv2ASOZtDnF8AUpcgQFdgFE"
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

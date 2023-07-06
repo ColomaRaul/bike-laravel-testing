@@ -1,6 +1,6 @@
 PHP_CONTAINER="app-php"
 
-init: build up migrate
+init: build up composer-install migrate
 
 build:
 	docker-compose -f docker-compose.yml build
