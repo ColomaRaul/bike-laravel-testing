@@ -4,13 +4,15 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\ValueObject\DateTimeValue;
-use App\Models\ValueObject\ItemCollection;
 use App\Models\ValueObject\Money;
 use App\Models\ValueObject\Uuid;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 final class Bike extends Model implements \JsonSerializable
 {
+    use HasUuids;
+
     protected $table = 'bike';
 
     private Uuid $id;
@@ -18,7 +20,6 @@ final class Bike extends Model implements \JsonSerializable
     private ?string $description;
     private ?Money $price;
     private ?string $manufacturer;
-    private ItemCollection $items;
     private DateTimeValue $createdAt;
     private DateTimeValue $updatedAt;
 
@@ -32,67 +33,51 @@ final class Bike extends Model implements \JsonSerializable
         'updated_at',
     ];
 
-    public static function reconstitute(
-        Uuid $id,
-        string $name,
-        ?string $description,
-        ?Money $price,
-        ?string $manufacturer,
-        ItemCollection $items,
-        DateTimeValue $createdAt,
-        DateTimeValue $updatedAt,
-    ): self {
-        $self = new self();
-        $self->id = $id;
-        $self->name = $name;
-        $self->description = $description;
-        $self->price = $price;
-        $self->manufacturer = $manufacturer;
-        $self->items = $items;
-        $self->createdAt = $createdAt;
-        $self->updatedAt = $updatedAt;
-
-        return $self;
-    }
-
     public function id(): Uuid
     {
-        return $this->id;
+        return Uuid::from($this->attributes['id']);
     }
 
     public function name(): string
     {
-        return $this->name;
+        return $this->attributes['name'];
     }
 
     public function description(): ?string
     {
-        return $this->description;
+        return $this->attributes['description'] ?? null;
     }
 
     public function price(): ?Money
     {
-        return $this->price;
+        return null !== $this->attributes['price'] ? Money::from($this->attributes['price']) : null;
     }
 
     public function manufacturer(): ?string
     {
-        return $this->manufacturer;
+        return $this->attributes['manufacturer'] ?? null;
     }
 
-    public function items(): ItemCollection
+    public function items(): mixed
     {
-        return $this->items;
+        return $this->hasMany(Item::class, 'bike_id');
+    }
+
+    public function itemsToJson(): array
+    {
+        return $this->items()->map(function ($item) {
+            return $item->jsonSerialize();
+        })->toJson();
     }
 
     public function createdAt(): DateTimeValue
     {
-        return $this->createdAt;
+        return DateTimeValue::createFromString($this->attributes['created_at']);
     }
 
     public function updatedAt(): DateTimeValue
     {
-        return $this->updatedAt;
+        return DateTimeValue::createFromString($this->attributes['updated_at']);
     }
 
     public function jsonSerialize(): array
@@ -103,7 +88,7 @@ final class Bike extends Model implements \JsonSerializable
             'description' => $this->description(),
             'price' => $this->price()->toFloat(),
             'manufacturer' => $this->manufacturer(),
-            'items' => $this->items()->jsonSerialize(),
+            'items' => $this->items()->getModels(),
             'created_at' => $this->createdAt()->toAtomString(),
             'updated_at' => $this->updatedAt()->toAtomString(),
         ];

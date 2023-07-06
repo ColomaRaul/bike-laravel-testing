@@ -5,7 +5,6 @@ namespace App\Services;
 
 use App\Models\Bike;
 use App\Models\Item;
-use App\Models\ValueObject\ItemCollection;
 use App\Models\ValueObject\Money;
 use App\Models\ValueObject\Uuid;
 use App\Repositories\BikeRepositoryInterface;
@@ -50,8 +49,6 @@ final class CreateBikeService
             ],
         );
 
-        //SAVE bike
-//        Cache::put('bike_'.$id->value(), $bike, 60);
         $this->bikeRepository->save($bike);
     }
 }

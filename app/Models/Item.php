@@ -5,10 +5,13 @@ namespace App\Models;
 
 use App\Models\ValueObject\DateTimeValue;
 use App\Models\ValueObject\Uuid;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 final class Item extends Model implements \JsonSerializable
 {
+    use HasUuids;
+
     protected $table = 'item';
     protected $fillable = [
         'id',
@@ -28,60 +31,44 @@ final class Item extends Model implements \JsonSerializable
     private DateTimeValue $createdAt;
     private DateTimeValue $updatedAt;
 
-    public static function reconstitute(
-        Uuid $id,
-        Uuid $bikeId,
-        string $model,
-        string $type,
-        ?string $description,
-        DateTimeValue $createdAt,
-        DateTimeValue $updatedAt,
-    ): self {
-        $self = new self();
-        $self->id = $id;
-        $self->bikeId = $bikeId;
-        $self->model = $model;
-        $self->type = $type;
-        $self->description = $description;
-        $self->createdAt = $createdAt;
-        $self->updatedAt = $updatedAt;
-
-        return $self;
-    }
-
     public function id(): Uuid
     {
-        return $this->id;
+        return Uuid::from($this->attributes['id']);
     }
 
     public function bikeId(): Uuid
     {
-        return $this->bikeId;
+        return Uuid::from($this->attributes['bike_id']);
     }
 
     public function model(): string
     {
-        return $this->model;
+        return $this->attributes['model'];
     }
 
     public function type(): string
     {
-        return $this->type;
+        return $this->attributes['type'];
     }
 
     public function description(): ?string
     {
-        return $this->description;
+        return $this->attributes['description'] ?? null;
     }
 
     public function createdAt(): DateTimeValue
     {
-        return $this->createdAt;
+        return DateTimeValue::createFromString($this->attributes['created_at']);
     }
 
     public function updatedAt(): DateTimeValue
     {
-        return $this->updatedAt;
+        return DateTimeValue::createFromString($this->attributes['updated_at']);
+    }
+
+    public function bike(): mixed
+    {
+        return $this->belongsTo(Bike::class, 'id');
     }
 
     public function jsonSerialize(): array
