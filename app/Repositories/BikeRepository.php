@@ -4,14 +4,23 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Bike;
+use App\Models\ValueObject\Money;
 use App\Models\ValueObject\OrderType;
-use Illuminate\Database\Eloquent\Collection;
+use App\Models\ValueObject\Uuid;
 
 final class BikeRepository implements BikeRepositoryInterface
 {
-    public function save(Bike $bike): void
+    public function create(Uuid $id, string $name, ?string $description, ?Money $price, ?string $manufacturer): Bike
     {
-        $bike->save();
+        return Bike::create(
+            [
+                'id' => $id->value(),
+                'name' => $name,
+                'description' => $description,
+                'price' => $price->value(),
+                'manufacturer' => $manufacturer,
+            ],
+        );
     }
 
     public function searchByCriteria(?string $name, ?string $manufacture, ?string $type, ?OrderType $order): array

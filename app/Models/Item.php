@@ -8,7 +8,7 @@ use App\Models\ValueObject\Uuid;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-final class Item extends Model implements \JsonSerializable
+class Item extends Model implements \JsonSerializable
 {
     use HasUuids;
 

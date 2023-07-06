@@ -9,7 +9,7 @@ use App\Models\ValueObject\Uuid;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-final class Bike extends Model implements \JsonSerializable
+class Bike extends Model implements \JsonSerializable
 {
     use HasUuids;
 

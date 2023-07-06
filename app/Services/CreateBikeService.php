@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Bike;
-use App\Models\Item;
 use App\Models\ValueObject\Money;
 use App\Models\ValueObject\Uuid;
 use App\Repositories\BikeRepositoryInterface;
@@ -19,36 +17,17 @@ final class CreateBikeService
     }
 
     public function execute(
-        Uuid $id,
+        Uuid $bikeId,
         string $name,
         string $description,
         float $price,
         string $manufacturer,
         array $items,
     ): void {
+        $this->bikeRepository->create($bikeId, $name, $description, Money::fromFloat($price), $manufacturer);
+
         foreach ($items as $item) {
-            $item = Item::create(
-                [
-                    'id' => Uuid::random(),
-                    'bike_id' => $id->value(),
-                    'model' => $item['model'],
-                    'type' => $item['type'],
-                    'description' => $item['description'] ?? null,
-                ],
-            );
-
-            $this->itemRepository->save($item);
+            $this->itemRepository->create(Uuid::random(), $bikeId, $item['model'], $item['type'], $item['description'] ?? null);
         }
-        $bike = Bike::create(
-            [
-                'id' => $id->value(),
-                'name' => $name,
-                'description' => $description,
-                'price' => Money::fromFloat($price)->value(),
-                'manufacturer' => $manufacturer,
-            ],
-        );
-
-        $this->bikeRepository->save($bike);
     }
 }

@@ -1,6 +1,6 @@
 PHP_CONTAINER="app-php"
 
-init: build up
+init: build up migrate
 
 build:
 	docker-compose -f docker-compose.yml build
@@ -14,6 +14,9 @@ down:
 bash:
 	docker exec -it ${PHP_CONTAINER} sh
 
+migrate:
+	@make exec/"php artisan migrate"
+
 exec/%:
 	@docker exec -it ${PHP_CONTAINER} $*
 
@@ -22,3 +25,6 @@ composer-install:
 
 composer/%:
 	@make exec/"composer $*"
+
+test:
+	@make exec/"php artisan test"
